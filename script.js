@@ -1,52 +1,36 @@
 //your JS code here. If required.
-//your JS code here. If required.
-const pro1=()=>{
-	let time = Math.random() * 2000 + 1000;
-    return new Promise((resolve,reject)=>{
-        setTimeout(()=>{
-            resolve(['Promise 1',time])
-        },time)
-    })
+function getRandomTime(min, max) {
+        return (Math.random() * (max - min + 1) + min).toFixed(3);
 }
+function getPromise() {
+	return new Promise((res,rej)=>{
+	const time=getRandomTime(1,3);
+	setTimeout(()=>{
+			res(time);
+		},time*1000);
+	});
+}
+const p1=getPromise();
+const p2=getPromise();
+const p3=getPromise();
 
-const pro2=()=>{
-	let time = Math.random() * 2000 + 1000;
-    return new Promise((resolve,reject)=>{
-        setTimeout(()=>{
-            resolve(["Promise 2",time])
-        },2002)
-    })
-}
+const arr=[p1,p2,p3];
 
+const startTime=performance.now();
 
-const pro3=()=>{
-	let time = Math.random() * 2000 + 1000;
-    return new Promise((resolve,reject)=>{
-        setTimeout(()=>{
-            resolve(["Promise 3",time])
-        },2052)
-    })
-}
-let body=document.getElementById("output");
-function solve(){
-    let obj1=new Date();
-    console.log(obj1);
-    Promise.all([pro1(),pro2(),pro3()]).then((data)=>{
-        console.log(data);
-        let obj2=new Date();
-        console.log(obj2);
-        body.innerHTML="";
-        data.forEach(element => {
-            console.log(element);
-            body.innerHTML+=`<tr>
-            <th>${element[0]}</th>
-            <th>${element[1]/1000}</th>
-        </tr>`
-        });
-        body.innerHTML+=` <tr>
-        <th>Total</th>
-        <th>${(obj2-obj1)/1000}</th>
-    </tr>`
-    })
-}
-solve();
+Promise.all(arr).then((res)=>{
+	const loading=document.getElementById("loading");
+	if(loading) loading.remove();
+
+	const tbody=document.getElementById("output");
+	res.forEach((r,i)=>{
+		const row = document.createElement('tr');
+        row.innerHTML = `<td>Promise ${i+1}</td><td>${r}</td>`;
+        tbody.appendChild(row);
+	});	  
+	
+	const totalTime = ((performance.now() - startTime) / 1000).toFixed(3);
+	const totalRow = document.createElement('tr');
+    totalRow.innerHTML = `<td>Total</td><td>${totalTime}</td>`;
+	tbody.appendChild(totalRow);
+});
